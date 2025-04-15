@@ -43,6 +43,34 @@ pipeline {
                  
              }
          }
+         tage('Build Docker Image') {
+            steps {
+                bat "docker build -t %ACR_LOGIN_SERVER%/webapplication:latest -f WebApplication/Dockerfile WebApplication"
+            }
+        }
+         stage('Login to ACR') {
+            steps {
+                bat "az acr login --name %ACR_NAME%"
+            }
+        }
+
+        stage('Push Docker Image to ACR') {
+            steps {
+                bat "docker push %ACR_LOGIN_SERVER%/webapplication:latest"
+            }
+        }
+
+        stage('Get AKS Credentials') {
+            steps {
+                bat "az aks get-credentials --resource-group %RESOURCE_GROUP% --name %AKS_CLUSTER% --overwrite-existing"
+            }
+        }
+
+        stage('Deploy to AKS') {
+            steps {
+                bat "kubectl apply -f WebApplication/deployment.yaml"
+            }
+        }
 
     }
 
