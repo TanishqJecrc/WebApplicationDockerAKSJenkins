@@ -32,18 +32,32 @@ resource "azurerm_kubernetes_cluster" "aks" {
         type = "SystemAssigned"
     }
 
-    linux_profile {
-        admin_username = "azureuser"
-
-        ssh_key {
-            key_data = file("~/.ssh/aks_ssh_key.pub")
-        }
+    network_profile {
+    network_plugin    = "azure"
+    load_balancer_sku = "standard"
     }
+
 }
 
 resource "azurerm_role_assignment" "acr_pull" {
     scope                = azurerm_container_registry.acr.id
     role_definition_name = "AcrPull"
     principal_id         = azurerm_kubernetes_cluster.aks.identity[0].principal_id
+
+    depends_on = [
+    azurerm_kubernetes_cluster.aks
+  ]
   }
 
+# Outputs
+output "resource_group_name" {
+  value = azurerm_resource_group.rg.name
+}
+
+output "acr_login_server" {
+  value = azurerm_container_registry.acr.login_server
+}
+
+output "aks_cluster_name" {
+  value = azurerm_kubernetes_cluster.aks.name
+}
