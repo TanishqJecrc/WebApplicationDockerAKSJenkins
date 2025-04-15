@@ -43,7 +43,7 @@ pipeline {
                  
              }
          }
-         tage('Build Docker Image') {
+         stage('Build Docker Image') {
             steps {
                 bat "docker build -t %ACR_LOGIN_SERVER%/webapplication:latest -f WebApplication/Dockerfile WebApplication"
             }
