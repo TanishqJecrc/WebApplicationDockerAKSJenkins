@@ -34,6 +34,16 @@ pipeline {
             }
         }
 
+        stage('Build') {
+             steps {
+                 dir('WebApplication') {
+                     bat 'dotnet publish WebApplication.csproj -c Release -o out'
+                    
+                 }
+                 
+             }
+         }
+
     }
 
     post {
